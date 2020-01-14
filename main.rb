@@ -27,34 +27,37 @@ class Parser
 
     @table = {
       S: {
-        'ab' => :r1,
-        'ac' => :r1,
+        'a' => :r1,
         'b' => :r2,
         'c' => :r2
       },
       A: {
-        'ab' => :r3,
-        'ac' => :r4
+        'a' => :r3,
       },
       B: {
-        'b' => :r5,
+        'b' => :r7,
         :EOF => :r6
       },
+      C: {
+        'b' => :r4,
+        'c' => :r5
+      },
       D: {
-        'b' => :r8,
-        'c' => :r7
+        'b' => :r9,
+        'c' => :r8
       }
     }
 
     @rules = {
       r1: [:A],
       r2: [:D],
-      r3: ['ab', :B],
-      r4: ['ac', :B],
-      r5: ['b', :B],
+      r3: ['a', :C],
+      r4: ['b', :B],
+      r5: ['c', :B],
       r6: [:EOF],
-      r7: ['c', :D],
-      r8: ['b']
+      r7: ['b', :B],
+      r8: ['c', :D],
+      r9: ['b']
     }
   end
 
@@ -131,7 +134,8 @@ end
 Parser.new().parse(chain)
 
 chain = Fiber.new do
-  Fiber.yield "ac"
+  Fiber.yield "a"
+  Fiber.yield "c"
   Fiber.yield "b"
   Fiber.yield "b"
   Fiber.yield "b"
@@ -154,7 +158,8 @@ chain = Fiber.new do
   Fiber.yield "c"
   Fiber.yield "c"
   Fiber.yield "c"
-  Fiber.yield "ab"
+  Fiber.yield "a"
+  Fiber.yield "b"
   Fiber.yield :EOF
 end
 
